@@ -92,6 +92,20 @@ export default function Home() {
   const [currentProject, setCurrentProject] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationDirection, setAnimationDirection] = useState<'next' | 'prev'>('next');
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeTab, setActiveTab] = useState<'mvp' | 'site'>('mvp');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const projects = [
     {
@@ -166,17 +180,22 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-white">
       {/* Navbar */}
       <header className="absolute w-full z-50 top-4">
-        <div className="container mx-auto px-6 md:px-32 lg:px-48 h-16 flex items-center justify-center md:justify-between relative">
-          <div className="flex items-center gap-2 font-bold font-heading text-xl">
+        <div className="container mx-auto px-6 md:px-32 lg:px-48 h-16 flex items-center justify-between md:grid md:grid-cols-3">
+          {/* Logo - Left */}
+          <div className="flex items-center gap-2 font-bold font-heading text-xl md:justify-self-start">
             <div className="w-9 h-9 bg-black rounded-lg text-white flex items-center justify-center shadow-[-4px_4px_8px_rgba(0,0,0,0.3)]">P</div>
             <span>Peak</span>
           </div>
-          <nav className="hidden md:flex gap-8 text-sm font-medium text-gray-500 absolute left-1/2 -translate-x-1/2">
+
+          {/* Nav - Center (Desktop) */}
+          <nav className="hidden md:flex gap-8 text-sm font-medium text-gray-500 justify-self-center">
             <a href="#problem" className="hover:text-black transition-colors">Problème</a>
             <a href="#features" className="hover:text-black transition-colors">Solutions</a>
             <a href="#offer" className="hover:text-black transition-colors">Offre</a>
           </nav>
-          <button className="group hidden md:flex items-center gap-2 px-2.5 py-0.5 rounded-xl bg-white text-black text-sm font-medium border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-md">
+
+          {/* CTA - Right (Desktop) */}
+          <button className="group hidden md:flex items-center gap-2 px-2.5 py-0.5 rounded-xl bg-white text-black text-sm font-medium border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-md justify-self-end">
             <div className="flex items-start justify-center overflow-hidden h-8 gap-1">
               <div className="flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:-translate-y-8" style={{ transitionDelay: '0ms' }}>
                 <div className="h-8 flex items-center">
@@ -194,10 +213,65 @@ export default function Home() {
               ))}
             </div>
           </button>
+
+          {/* Hamburger Button (Mobile) */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-xl bg-white border border-gray-200 shadow-md transition-all hover:bg-gray-50"
+            aria-label="Menu"
+          >
+            <span className={`block w-5 h-0.5 bg-slate-900 rounded-full transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-1' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-slate-900 rounded-full transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-1' : ''}`} />
+          </button>
         </div>
       </header>
 
-      <main className="flex-grow pt-24">
+      {/* Mobile Menu Overlay */}
+      <div className={`fixed inset-0 z-40 transition-all duration-500 md:hidden ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+
+        {/* Menu Panel */}
+        <div className={`absolute top-24 left-4 right-4 bg-white rounded-3xl shadow-2xl p-8 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${mobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}>
+          <nav className="flex flex-col gap-6">
+            <a
+              href="#problem"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-2xl font-semibold text-slate-900 hover:text-gray-500 transition-colors"
+            >
+              Problème
+            </a>
+            <a
+              href="#features"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-2xl font-semibold text-slate-900 hover:text-gray-500 transition-colors"
+            >
+              Solutions
+            </a>
+            <a
+              href="#offer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-2xl font-semibold text-slate-900 hover:text-gray-500 transition-colors"
+            >
+              Offre
+            </a>
+          </nav>
+
+          <div className="mt-8 pt-6 border-t border-gray-100">
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-slate-800 transition-colors shadow-lg"
+            >
+              Réserver un appel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <main className="flex-grow pt-24 overflow-x-hidden">
         {/* HERO SECTION */}
         <section className="relative pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden">
           <div className="container mx-auto px-6 relative z-10 text-center">
@@ -236,7 +310,7 @@ export default function Home() {
             <div className="relative z-10">
 
 
-              <h1 className="text-5xl md:text-7xl font-semibold tracking-tight mb-8 max-w-5xl mx-auto leading-[1.15] font-heading text-slate-900">
+              <h1 className="text-5xl md:text-7xl font-semibold mb-8 max-w-5xl mx-auto leading-[1.15] font-heading text-slate-900" style={{ letterSpacing: '-2px' }}>
                 Lancez votre solution <span className="text-slate-900">SaaS</span> & <span className="text-slate-900">MVP</span> en jours, pas en mois
               </h1>
 
@@ -283,18 +357,19 @@ export default function Home() {
         </section>
 
         {/* Divider */}
-        <div className="w-[750px] mx-auto h-px bg-gradient-to-r from-transparent via-[#0A3A69] to-transparent opacity-30 my-20" />
+        <div className="max-w-[750px] w-[90%] md:w-full mx-auto h-px bg-gradient-to-r from-transparent via-[#0A3A69] to-transparent opacity-30 my-20" />
 
         {/* SECTION 2: PROJECTS CAROUSEL */}
-        <section id="problem" className="py-24 bg-white">
+        <section id="problem" className="py-24 bg-white overflow-hidden">
           <div className="container mx-auto px-6 md:px-32 lg:px-48">
             {/* Header */}
             <div className="mb-20">
-              <h2 className="text-4xl md:text-5xl font-bold font-heading text-slate-900 leading-tight mb-6 text-left">
-                Un SaaS qui prend des <span className="text-gray-400">"mois"</span> à lancer ?<br />
+              <span className="block text-slate-900 font-normal uppercase tracking-wider text-sm mb-4">VITESSE ABSOLUE</span>
+              <h2 className="text-3xl md:text-5xl font-bold font-heading text-slate-900 leading-tight mb-3 text-left" style={{ letterSpacing: '-1.5px' }}>
+                Un SaaS qui prend des <span className="text-gray-400 font-mono">"</span>mois<span className="text-gray-400 font-mono">"</span> à lancer ?<br />
                 Ce n'est plus possible.
               </h2>
-              <p className="text-xl text-gray-500 font-medium mb-8 text-left">
+              <p className="text-lg text-gray-500 font-medium mb-12 text-left">
                 Vos concurrents sont déjà passés à l'action.
               </p>
               <div className="flex justify-start">
@@ -306,92 +381,102 @@ export default function Home() {
 
             {/* Content Grid */}
             <div className="relative grid lg:grid-cols-2 gap-16 items-center">
-              {/* Left: Image Block with Animation */}
-              <div className="relative h-[360px] w-full overflow-hidden flex items-center justify-center">
+              {/* Left Column: Image + Controls Wrapper */}
+              <div className="relative flex flex-col items-center">
 
-                {/* Container that slides - simplified to 3 blocks */}
-                <div
-                  className={`flex flex-col gap-6 w-full min-w-[450px] ${isAnimating ? 'transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]' : ''}`}
-                  style={{
-                    transform: isAnimating
-                      ? (animationDirection === 'next' ? 'translateY(-304px)' : 'translateY(304px)')
-                      : 'translateY(0px)',
-                    willChange: 'transform'
-                  }}
-                >
+                {/* Image Block with Animation (Overflow Hidden) */}
+                <div className="relative h-[360px] w-full overflow-hidden flex items-center justify-center">
 
-                  {/* Previous Block (n-1) - For PREV animation */}
-                  <div className={`h-[280px] w-full rounded-3xl flex items-center justify-center overflow-hidden shadow-lg border
-                    ${currentProject > 0 ? `${projects[currentProject - 1].imageColor} ${projects[currentProject - 1].borderColor || ''}` : 'bg-transparent border-transparent shadow-none'}`}>
-                    <span className="text-gray-100 font-medium relative z-10 text-xl tracking-wide">
-                      {currentProject > 0 ? projects[currentProject - 1].imageText : ''}
-                    </span>
+                  {/* Container that slides */}
+                  <div
+                    className={`flex flex-row lg:flex-col gap-6 w-full ${isAnimating ? 'transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]' : ''}`}
+                    style={{
+                      transform: isAnimating
+                        ? (isMobile
+                          ? (animationDirection === 'next' ? 'translateX(calc(-200% - 48px))' : 'translateX(0)')
+                          : (animationDirection === 'next' ? 'translateY(-304px)' : 'translateY(304px)')
+                        )
+                        : (isMobile ? 'translateX(calc(-100% - 24px))' : 'translate3d(0,0,0)'),
+                      willChange: 'transform'
+                    }}
+                  >
+
+                    {/* Previous Block (n-1) */}
+                    <div className={`h-[280px] w-full min-w-full lg:min-w-0 rounded-3xl flex items-center justify-center overflow-hidden shadow-lg border
+                      ${currentProject > 0 ? `${projects[currentProject - 1].imageColor} ${projects[currentProject - 1].borderColor || ''}` : 'bg-transparent border-transparent shadow-none'}`}>
+                      <span className="text-gray-100 font-medium relative z-10 text-xl tracking-wide">
+                        {currentProject > 0 ? projects[currentProject - 1].imageText : ''}
+                      </span>
+                    </div>
+
+                    {/* Main Image Block (current) */}
+                    <div className={`h-[280px] w-full min-w-full lg:min-w-0 rounded-3xl flex items-center justify-center overflow-hidden shadow-lg border ${projects[currentProject].imageColor} ${projects[currentProject].borderColor || ''}`}>
+                      <span className="text-gray-100 font-medium relative z-10 text-xl tracking-wide">{projects[currentProject].imageText}</span>
+                    </div>
+
+                    {/* Next Block (n+1) */}
+                    <div className={`h-[280px] w-full min-w-full lg:min-w-0 rounded-3xl flex items-center justify-center overflow-hidden shadow-lg border
+                      ${currentProject < projects.length - 1 ? `${projects[currentProject + 1].imageColor} ${projects[currentProject + 1].borderColor || ''}` : 'bg-transparent border-transparent shadow-none'}`}>
+                      <span className="text-gray-100 font-medium relative z-10 text-xl tracking-wide">
+                        {currentProject < projects.length - 1 ? projects[currentProject + 1].imageText : ''}
+                      </span>
+                    </div>
+
                   </div>
-
-                  {/* Main Image Block (current) - COLORFUL */}
-                  <div className={`h-[280px] w-full rounded-3xl flex items-center justify-center overflow-hidden shadow-lg border ${projects[currentProject].imageColor} ${projects[currentProject].borderColor || ''}`}>
-                    <span className="text-gray-100 font-medium relative z-10 text-xl tracking-wide">{projects[currentProject].imageText}</span>
-                  </div>
-
-                  {/* Next Block (n+1) - For NEXT animation */}
-                  <div className={`h-[280px] w-full rounded-3xl flex items-center justify-center overflow-hidden shadow-lg border
-                    ${currentProject < projects.length - 1 ? `${projects[currentProject + 1].imageColor} ${projects[currentProject + 1].borderColor || ''}` : 'bg-transparent border-transparent shadow-none'}`}>
-                    <span className="text-gray-100 font-medium relative z-10 text-xl tracking-wide">
-                      {currentProject < projects.length - 1 ? projects[currentProject + 1].imageText : ''}
-                    </span>
-                  </div>
-
                 </div>
-              </div>
 
-              {/* Swipe Control (Apple-style) */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-2 p-1.5 bg-white/80 backdrop-blur-sm shadow-xl rounded-full border border-white/50 z-20">
-                <button
-                  onClick={prevProject}
-                  disabled={currentProject <= 0}
-                  className={`w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center transition-all
-                    ${currentProject <= 0
-                      ? 'text-gray-200 cursor-not-allowed opacity-50'
-                      : 'text-gray-400 hover:text-black hover:scale-110 active:scale-95'
-                    }
-                  `}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                {/* Swipe Control (Below Image on Mobile, Right Side on Desktop) */}
+                <div className="flex gap-2 p-1.5 bg-white shadow-md rounded-full border border-gray-100 mt-6
+                  lg:absolute lg:mt-0 lg:bg-white/80 lg:backdrop-blur-sm lg:shadow-xl lg:border-white/50 lg:z-20
+                  lg:top-1/2 lg:right-[-12px] lg:translate-x-full lg:left-auto lg:-translate-y-1/2 lg:flex-col
+                ">
+                  <button
+                    onClick={prevProject}
+                    disabled={currentProject <= 0}
+                    className={`w-10 h-10 lg:w-8 lg:h-8 rounded-full bg-white shadow-sm flex items-center justify-center transition-all
+                      ${currentProject <= 0
+                        ? 'text-gray-200 cursor-not-allowed opacity-50'
+                        : 'text-gray-400 hover:text-black hover:scale-110 active:scale-95'
+                      }
+                    `}
                   >
-                    <path d="M5 15l7-7 7 7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={nextProject}
-                  disabled={currentProject >= projects.length - 1}
-                  className={`w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center transition-all
-                    ${currentProject >= projects.length - 1
-                      ? 'text-gray-200 cursor-not-allowed opacity-50'
-                      : 'text-gray-400 hover:text-black hover:scale-110 active:scale-95'
-                    }
-                  `}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    {/* Chevron Right rotated: 180deg (Left) on mobile, -90deg (Up) on desktop */}
+                    <svg
+                      className="w-5 h-5 lg:w-4 lg:h-4 transform rotate-180 lg:-rotate-90 transition-transform"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={nextProject}
+                    disabled={currentProject >= projects.length - 1}
+                    className={`w-10 h-10 lg:w-8 lg:h-8 rounded-full bg-white shadow-sm flex items-center justify-center transition-all
+                      ${currentProject >= projects.length - 1
+                        ? 'text-gray-200 cursor-not-allowed opacity-50'
+                        : 'text-gray-400 hover:text-black hover:scale-110 active:scale-95'
+                      }
+                    `}
                   >
-                    <path d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+                    {/* Chevron Right rotated: 0deg (Right) on mobile, 90deg (Down) on desktop */}
+                    <svg
+                      className="w-5 h-5 lg:w-4 lg:h-4 transform rotate-0 lg:rotate-90 transition-transform"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               {/* Right: Text Block */}
@@ -432,99 +517,482 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SECTION 3: PERFORMANCE / BENTO - "Conçu pour performer" */}
-        <section id="features" className="py-24 bg-gray-50/50 border-y border-gray-100">
-          <div className="container mx-auto px-6">
+
+
+        {/* Divider */}
+        <div className="max-w-[750px] w-[90%] md:w-full mx-auto h-px bg-gradient-to-r from-transparent via-[#0A3A69] to-transparent opacity-30 my-20" />
+
+        {/* SECTION 3: BENTO GRID */}
+        <section className="pt-10 pb-16 md:pb-32 bg-white overflow-hidden">
+          <div className="container mx-auto px-6 md:px-32 lg:px-48">
+
+            {/* Header Centered */}
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">Conçu pour performer.<br />Taillé pour durer.</h2>
-              <div className="flex items-center justify-center gap-4 mt-8">
-                <button className="px-6 py-2 bg-black text-white rounded-full text-sm font-medium">Design System</button>
-                <button className="px-6 py-2 bg-white text-gray-500 border border-gray-200 rounded-full text-sm font-medium hover:bg-gray-50">Tech Stack</button>
+              <span className="block text-slate-900 font-normal uppercase tracking-wider text-sm mb-4">NOS RÉALISATIONS PHARES</span>
+              <h2 className="text-3xl md:text-5xl font-bold font-heading leading-tight tracking-[-0.08em] mb-[60px] md:mb-[100px]">
+                <span className="text-gray-400">Conçu pour performer.</span><br />
+                <span className="text-slate-900">Taillé pour durer.</span>
+              </h2>
+
+              {/* Apple Style Toggle - Stacked Mobile / Horizontal Desktop */}
+              <div className="flex flex-col md:inline-grid md:grid-cols-2 bg-gray-100 p-1.5 rounded-2xl relative mx-auto w-full md:w-auto md:min-w-[700px]">
+                {/* Sliding Background Pill */}
+                {/* Sliding Background Pill */}
+                <div
+                  className={`absolute bg-slate-900 shadow-sm transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] rounded-xl
+                    ${isMobile
+                      ? (activeTab === 'mvp' ? 'top-1.5 inset-x-1.5 h-[calc(50%-6px)]' : 'bottom-1.5 inset-x-1.5 h-[calc(50%-6px)]')
+                      : (activeTab === 'mvp' ? 'left-1.5 top-1.5 bottom-1.5 w-[calc(50%-6px)]' : 'right-1.5 top-1.5 bottom-1.5 w-[calc(50%-6px)]')
+                    }
+                  `}
+                />
+
+                <button
+                  onClick={() => setActiveTab('mvp')}
+                  className={`relative z-10 px-4 md:px-12 py-4 md:py-3 rounded-xl text-sm font-semibold text-center transition-colors duration-300 ${activeTab === 'mvp' ? 'text-white' : 'text-gray-500 hover:text-gray-900'}`}
+                >
+                  MVP & APP
+                </button>
+                <button
+                  onClick={() => setActiveTab('site')}
+                  className={`relative z-10 px-4 md:px-12 py-4 md:py-3 rounded-xl text-sm font-semibold text-center transition-colors duration-300 ${activeTab === 'site' ? 'text-white' : 'text-gray-500 hover:text-gray-900'}`}
+                >
+                  Landing page & Site
+                </button>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-              {/* Feature Large 1 */}
-              <div className="aspect-[4/3] bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-4">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            {/* Bento Grid Content */}
+            <div className="relative min-h-[900px] md:min-h-[500px]">
+
+              {/* MVP & APP LAYOUT */}
+              <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 transition-all duration-500 ${activeTab === 'mvp' ? 'opacity-100 scale-100 relative md:absolute md:inset-0 z-10' : 'opacity-0 scale-95 absolute inset-0 pointer-events-none z-0'}`}>
+                {/* Big Card Left */}
+                <div className="lg:col-span-2 bg-gray-200 rounded-3xl h-[300px] lg:h-full w-full"></div>
+
+                {/* Right Column Stack */}
+                <div className="flex flex-col gap-6 h-auto lg:h-full">
+                  <div className="bg-gray-200 rounded-3xl h-[200px] lg:flex-1 lg:min-h-[200px] w-full"></div>
+                  <div className="bg-gray-200 rounded-3xl h-[200px] lg:flex-1 lg:min-h-[200px] w-full"></div>
                 </div>
-                <div>
-                  <h3 className="text-2xl font-bold mb-2">Vitesse d'exécution</h3>
-                  <p className="text-gray-500">Nous utilisons les meilleurs outils pour réduire le temps de développement sans sacrifier la qualité.</p>
-                </div>
-                <div className="mt-6 bg-gray-50 rounded-xl h-32 w-full"></div>
               </div>
 
-              {/* Feature Large 2 */}
-              <div className="aspect-[4/3] bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 mb-4">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>
+              {/* LANDING PAGE & SITE LAYOUT */}
+              <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 transition-all duration-500 ${activeTab === 'site' ? 'opacity-100 scale-100 relative md:absolute md:inset-0 z-10' : 'opacity-0 scale-95 absolute inset-0 pointer-events-none z-0'}`}>
+                <div className="bg-gray-200 rounded-3xl h-[350px] lg:h-full w-full"></div>
+                <div className="bg-gray-200 rounded-3xl h-[350px] lg:h-full w-full"></div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        {/* Divider */}
+        <div className="max-w-[750px] w-[90%] md:w-full mx-auto h-px bg-gradient-to-r from-transparent via-[#0A3A69] to-transparent opacity-30 mt-2 mb-16 md:my-24" />
+
+        {/* SECTION 4: COMPLEXITY / GUARANTEES */}
+        <section className="pt-10 pb-32 bg-white overflow-hidden">
+          <div className="container mx-auto px-6 md:px-32 lg:px-48">
+            <div className="text-center mb-24">
+              <span className="block text-slate-900 font-normal uppercase tracking-wider text-sm mb-4">VOS GARANTIES DE SÉRÉNITÉ</span>
+              <h2 className="text-3xl md:text-5xl font-bold font-heading leading-tight tracking-[-0.08em]">
+                <span className="text-slate-900">Nous gérons la </span><span className="text-gray-400">complexité.</span><br />
+                <span className="text-slate-900">Concentrez-vous sur </span><span className="text-gray-400">l'essentiel.</span>
+              </h2>
+            </div>
+
+            {/* Premium Bento Grid 2x2 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-fr">
+
+              {/* 1. SECURITY - Dark Card (Solid & Secure) */}
+              <div className="group relative overflow-hidden rounded-[2.5rem] bg-slate-900 p-6 md:p-12 text-white shadow-2xl transition-all duration-500 hover:shadow-slate-900/40 hover:-translate-y-1 h-auto min-h-[350px]">
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                  <div>
+                    <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    </div>
+                    <h3 className="text-3xl font-bold font-heading mb-4 tracking-tight">RGPD & Sécurité.</h3>
+                    <p className="text-gray-400 font-medium leading-relaxed max-w-sm">
+                      Conformité totale dès le jour 1. Vos données sont blindées, vos mentions légales sont prêtes. Dormez tranquille.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-2xl font-bold mb-2">Scalabilité immédiate</h3>
-                  <p className="text-gray-500">Architecture pensée pour encaisser la croissance de 0 à 1M d'utilisateurs.</p>
+                {/* Background Glow */}
+                <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-blue-600/20 rounded-full blur-[80px] group-hover:bg-blue-600/30 transition-all duration-700 pointer-events-none" />
+              </div>
+
+              {/* 2. DESIGN - Light Card with Gradient (Creative) */}
+              <div className="group relative overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 md:p-12 shadow-xl shadow-gray-200/40 transition-all duration-500 hover:shadow-gray-200/60 hover:-translate-y-1 h-auto min-h-[400px]">
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                  <div>
+                    <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors duration-500">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
+                    </div>
+                    <h3 className="text-3xl font-bold font-heading text-slate-900 mb-4 tracking-tight">Direction Artistique.</h3>
+                    <p className="text-gray-500 font-medium leading-relaxed max-w-sm">
+                      Pas de templates génériques. Une identité visuelle unique, pensée pour convertir et marquer les esprits durablement.
+                    </p>
+                  </div>
                 </div>
-                <div className="mt-6 bg-gray-50 rounded-xl h-32 w-full"></div>
+                {/* Soft Gradient Orb */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-tr from-blue-50/0 via-purple-50/0 to-pink-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              </div>
+
+              {/* 3. SUPPORT - Clean Card (Reactive) */}
+              <div className="group relative overflow-hidden rounded-[2.5rem] border border-gray-100 bg-gray-50 p-6 md:p-12 transition-all duration-500 hover:bg-white hover:border-gray-200 hover:shadow-xl hover:shadow-gray-200/40 hover:-translate-y-1 h-auto min-h-[300px]">
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-[0_0_12px_rgba(34,197,94,0.6)]" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Toujours disponible</span>
+                  </div>
+                  <h3 className="text-2xl font-bold font-heading text-slate-900 mb-4 tracking-tight">Support Prioritaire.</h3>
+                  <p className="text-gray-500 font-medium leading-relaxed">
+                    Nous ne disparaissons pas après la livraison. Une question ? Une modif ? On gère en express.
+                  </p>
+                </div>
+              </div>
+
+              {/* 4. SCALABILITY - Tech Grid Styling (Future-proof) */}
+              <div className="group relative overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white p-6 md:p-12 shadow-xl shadow-gray-200/40 transition-all duration-500 hover:shadow-gray-200/60 hover:-translate-y-1 h-auto min-h-[400px]">
+                <div className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-500 pointer-events-none"
+                  style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}
+                />
+                <div className="relative z-10">
+                  <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                    <svg className="w-6 h-6 text-slate-900 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                  </div>
+                  <h3 className="text-2xl font-bold font-heading text-slate-900 mb-4 tracking-tight">Scalabilité Native.</h3>
+                  <p className="text-gray-500 font-medium leading-relaxed">
+                    Construit sur Next.js pour encaisser la charge. Votre MVP d'aujourd'hui est prêt pour vos millions d'utilisateurs de demain.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* SECTION 4: COMPLEXITY / BENTO GRID */}
-        <section className="py-24 bg-white">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Nous gérons la <span className="text-gray-400 line-through decoration-2">complexité</span>.<br />Concentrez-vous sur l'essentiel.</h2>
+        {/* Divider */}
+        <div className="max-w-[750px] w-[90%] md:w-full mx-auto h-px bg-gradient-to-r from-transparent via-[#0A3A69] to-transparent opacity-30 my-24" />
+
+        {/* SECTION 5: PROCESS */}
+        <section className="pt-10 pb-32 bg-white overflow-hidden">
+          <div className="container mx-auto px-6 md:px-32 lg:px-48">
+
+            {/* Header Centered */}
+            <div className="text-center mb-24">
+              <span className="block text-slate-900 font-normal uppercase tracking-wider text-sm mb-4">NOTRE PROCESSUS</span>
+              <h2 className="text-3xl md:text-5xl font-bold font-heading text-slate-900 leading-tight tracking-[-0.08em] mb-4">
+                Comment on transforme votre idée en succès.
+              </h2>
+              <p className="text-gray-400 font-medium text-lg">
+                Déployez. Testez. Vendez
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              <div className="md:col-span-2 h-64 bg-gray-100 rounded-3xl p-8 flex items-end">
-                <span className="font-bold text-xl">Intégrations API & Paiements</span>
+            {/* 3 Columns Process Steps */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16 mb-20 md:mb-32">
+
+              {/* Step 1: Encadrement */}
+              <div className="text-center">
+                <h3 className="text-lg font-bold text-slate-900 mb-3 font-heading">Encadrement</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  — On analyse votre vision, définit le périmètre technique et planifie chaque étape. Aucune surprise, que de la clarté.
+                </p>
               </div>
-              <div className="h-64 bg-gray-100 rounded-3xl p-8 flex items-end">
-                <span className="font-bold text-xl">Auth & Sécurité</span>
+
+              {/* Step 2: Développement */}
+              <div className="text-center">
+                <h3 className="text-lg font-bold text-slate-900 mb-3 font-heading">Développement</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  — Sprints agiles, livrables réguliers. Vous suivez l'avancement en temps réel et validez chaque feature.
+                </p>
               </div>
-              <div className="h-64 bg-gray-100 rounded-3xl p-8 flex items-end">
-                <span className="font-bold text-xl">Analytics</span>
-              </div>
-              <div className="md:col-span-2 h-64 bg-gray-100 rounded-3xl p-8 flex items-end">
-                <span className="font-bold text-xl">Dashboard Admin</span>
+
+              {/* Step 3: Livraison */}
+              <div className="text-center">
+                <h3 className="text-lg font-bold text-slate-900 mb-3 font-heading">Livraison</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  — Déploiement sur vos serveurs, documentation complète, formation de vos équipes. Vous êtes autonomes.
+                </p>
               </div>
             </div>
 
-            <div className="flex justify-center mt-12">
-              <button className="px-8 py-3 rounded-full border border-gray-200 text-sm font-semibold hover:bg-gray-50 transition-colors">
-                Voir toutes les fonctionnalités
-              </button>
+            {/* Bento Grid: 2 cards top, 1 full-width bottom */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              {/* Card 1: Cadrage */}
+              <div className="group relative bg-gray-100 rounded-[2rem] p-8 md:p-10 h-[280px] md:h-[320px] transition-all duration-500 hover:bg-gray-50 hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1 overflow-hidden">
+                <div className="relative z-10">
+                  <span className="inline-block px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-full mb-4">01</span>
+                  <h3 className="text-xl md:text-2xl font-bold font-heading text-slate-900 mb-3 tracking-tight">
+                    On cadre techniquement la vision
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed max-w-sm">
+                    Audit de faisabilité, choix de stack, architecture technique et roadmap détaillée.
+                  </p>
+                </div>
+                {/* Decorative Element */}
+                <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-gray-200/80 to-transparent rounded-tl-[4rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
+
+              {/* Card 2: Design & Dev */}
+              <div className="group relative bg-gray-100 rounded-[2rem] p-8 md:p-10 h-[280px] md:h-[320px] transition-all duration-500 hover:bg-gray-50 hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1 overflow-hidden">
+                <div className="relative z-10">
+                  <span className="inline-block px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-full mb-4">02</span>
+                  <h3 className="text-xl md:text-2xl font-bold font-heading text-slate-900 mb-3 tracking-tight">
+                    Design et optimisation<br className="hidden md:block" />
+                    Conception / Développement<br className="hidden md:block" />
+                    Intégrations
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed max-w-sm">
+                    UI/UX premium, code robuste, APIs et services tiers connectés.
+                  </p>
+                </div>
+                {/* Decorative Element */}
+                <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-gray-200/80 to-transparent rounded-tl-[4rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
+
+              {/* Card 3: Déploiement (Full Width) */}
+              <div className="md:col-span-2 group relative bg-gray-100 rounded-[2rem] p-8 md:p-10 h-[220px] md:h-[260px] transition-all duration-500 hover:bg-gray-50 hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1 overflow-hidden">
+                <div className="relative z-10">
+                  <span className="inline-block px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-full mb-4">03</span>
+                  <h3 className="text-xl md:text-2xl font-bold font-heading text-slate-900 mb-3 tracking-tight">
+                    Déploiement & Intégrations
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">
+                    Mise en production, tests de charge, monitoring, et support post-lancement. Votre produit est live et performant.
+                  </p>
+                </div>
+                {/* Decorative Element */}
+                <div className="absolute bottom-0 right-0 w-48 h-32 bg-gradient-to-tl from-gray-200/80 to-transparent rounded-tl-[4rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
+
             </div>
           </div>
         </section>
 
-        {/* SECTION 5: OFFRE */}
-        <section id="offer" className="py-24 bg-gray-50">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-2">Notre offre</h2>
-              <p className="text-gray-500">Simple, transparente et adaptée à votre stade de croissance.</p>
+        {/* Divider */}
+        <div className="max-w-[750px] w-[90%] md:w-full mx-auto h-px bg-gradient-to-r from-transparent via-[#0A3A69] to-transparent opacity-30 my-24" />
+
+        {/* SECTION 6: NOTRE OFFRE */}
+        <section className="pt-10 pb-32 bg-white overflow-hidden">
+          <div className="container mx-auto px-6 md:px-32 lg:px-48">
+
+            {/* Header Centered */}
+            <div className="text-center mb-20 md:mb-28">
+              <span className="block text-slate-900 font-normal uppercase tracking-wider text-sm mb-4">CE QUE NOUS PROPOSONS</span>
+              <h2 className="text-3xl md:text-5xl font-bold font-heading text-slate-900 leading-tight tracking-[-0.08em]">
+                Notre offre
+              </h2>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col">
-                  <div className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Plan {i}</div>
-                  <div className="text-3xl font-bold mb-6">{i === 1 ? 'MVP' : i === 2 ? 'Growth' : 'Scale'}</div>
-                  <ul className="space-y-4 mb-8 flex-grow">
-                    {[1, 2, 3, 4].map((j) => (
-                      <li key={j} className="flex items-center gap-3 text-sm text-gray-600">
-                        <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                        Feature {j} included
-                      </li>
-                    ))}
+            {/* 3 Columns Offer Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+
+              {/* Column 1: Accompagnement - Light Card with Blue Accent */}
+              <div className="group relative bg-white border border-gray-100 rounded-[2rem] p-8 md:p-10 transition-all duration-500 hover:border-gray-200 hover:shadow-2xl hover:shadow-gray-200/60 hover:-translate-y-1">
+                {/* Accent Line */}
+                <div className="absolute top-0 left-8 right-8 h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 rounded-b-full" />
+
+                <div className="pt-4">
+                  {/* Icon */}
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <svg className="w-7 h-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold font-heading text-slate-900 mb-2 tracking-tight">Accompagnement</h3>
+                  <p className="text-gray-400 font-medium text-sm mb-8">On pilote la trajectoire avec vous</p>
+
+                  {/* Features List */}
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                      <span className="text-gray-600 text-sm leading-relaxed">Cadrage complet : roadmap, backlog, objectifs</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                      <span className="text-gray-600 text-sm leading-relaxed">Coaching produit & tech en continu</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                      <span className="text-gray-600 text-sm leading-relaxed">Revues hebdo et reporting d'avancement</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                      <span className="text-gray-600 text-sm leading-relaxed">Alignement business / produit à chaque sprint</span>
+                    </li>
                   </ul>
-                  <button className="w-full py-3 rounded-xl bg-black text-white font-semibold text-sm hover:bg-gray-800 transition-colors">
-                    Choisir ce plan
+                </div>
+              </div>
+
+              {/* Column 2: Développement - Dark Card for Premium Contrast */}
+              <div className="group relative bg-slate-900 rounded-[2rem] p-8 md:p-10 transition-all duration-500 hover:shadow-2xl hover:shadow-slate-900/40 hover:-translate-y-1 overflow-hidden">
+                {/* Background Glow */}
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/20 rounded-full blur-[60px] pointer-events-none" />
+
+                <div className="relative z-10">
+                  {/* Icon */}
+                  <div className="w-14 h-14 bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold font-heading text-white mb-2 tracking-tight">Développement</h3>
+                  <p className="text-gray-400 font-medium text-sm mb-8">Une équipe pour livrer vite et bien</p>
+
+                  {/* Features List */}
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
+                      <span className="text-gray-300 text-sm leading-relaxed">Design system et UX sur-mesure</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
+                      <span className="text-gray-300 text-sm leading-relaxed">Front-end & back-end production ready</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
+                      <span className="text-gray-300 text-sm leading-relaxed">Fonctionnalités spécifiques & API</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
+                      <span className="text-gray-300 text-sm leading-relaxed">Back-office clé en main</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
+                      <span className="text-gray-300 text-sm leading-relaxed">Landing page si besoin</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Column 3: Déploiement - Light Card with Subtle Gradient */}
+              <div className="group relative bg-gradient-to-br from-gray-50 to-white border border-gray-100 rounded-[2rem] p-8 md:p-10 transition-all duration-500 hover:border-gray-200 hover:shadow-2xl hover:shadow-gray-200/60 hover:-translate-y-1">
+                {/* Accent Line */}
+                <div className="absolute top-0 left-8 right-8 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-b-full" />
+
+                <div className="pt-4">
+                  {/* Icon */}
+                  <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <svg className="w-7 h-7 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                    </svg>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold font-heading text-slate-900 mb-2 tracking-tight">Déploiement & Scalabilité</h3>
+                  <p className="text-gray-400 font-medium text-sm mb-8">Votre solution, en ligne et sécurisée.</p>
+
+                  {/* Features List - With Subtext */}
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                        <span className="text-slate-900 font-semibold text-sm">Déploiement Clé en Main</span>
+                      </div>
+                      <p className="text-gray-500 text-xs leading-relaxed pl-[18px]">Mise en production immédiate et optimisation de votre infrastructure.</p>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                        <span className="text-slate-900 font-semibold text-sm">Suivi Incidents & Bugs</span>
+                      </div>
+                      <p className="text-gray-500 text-xs leading-relaxed pl-[18px]">Monitoring actif pour une détection et une correction ultra-rapide.</p>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                        <span className="text-slate-900 font-semibold text-sm">Encadrement & Évolutions</span>
+                      </div>
+                      <p className="text-gray-500 text-xs leading-relaxed pl-[18px]">Accompagnement technique pour faire grandir votre projet sans limites.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* Divider */}
+        <div className="max-w-[750px] w-[90%] md:w-full mx-auto h-px bg-gradient-to-r from-transparent via-[#0A3A69] to-transparent opacity-30 my-12 md:my-24" />
+
+        {/* SECTION 7: FAQ */}
+        <section className="pt-10 pb-32 bg-white overflow-hidden">
+          <div className="container mx-auto px-6 md:px-32 lg:px-48">
+
+            {/* Header Centered */}
+            <div className="text-center mb-16 md:mb-20">
+              <span className="block text-slate-900 font-normal uppercase tracking-wider text-sm mb-4">QUESTIONS FRÉQUENTES</span>
+              <h2 className="text-3xl md:text-5xl font-bold font-heading text-slate-900 leading-tight tracking-[-0.08em]">
+                On répond à vos questions
+              </h2>
+            </div>
+
+            {/* FAQ Accordion */}
+            <div className="max-w-3xl mx-auto">
+              {[
+                {
+                  question: "Quel est le délai moyen pour lancer un MVP ?",
+                  answer: "Généralement entre <strong>4 et 8 semaines</strong> selon la complexité du projet. On commence par un sprint de cadrage d'une semaine pour définir précisément le périmètre, puis on livre par itérations. Vous avez une première version testable très rapidement."
+                },
+                {
+                  question: "Comment sont calculés vos tarifs ?",
+                  answer: "Nos tarifs sont basés sur la <strong>complexité du projet</strong> et le temps de développement estimé. On vous fournit un devis détaillé après le premier appel de cadrage. Pas de surprise : le prix annoncé est le prix final, sauf si vous demandez des fonctionnalités supplémentaires en cours de route."
+                },
+                {
+                  question: "Peut-on demander des modifications en cours de projet ?",
+                  answer: "Absolument. On travaille en <strong>méthode agile</strong> avec des sprints de 2 semaines. À chaque fin de sprint, vous validez les livrables et pouvez ajuster les priorités. Les modifications mineures sont incluses, les changements majeurs font l'objet d'un avenant."
+                },
+                {
+                  question: "Quelles technologies utilisez-vous ?",
+                  answer: "On privilégie des stacks modernes et éprouvées : <strong>Next.js / React</strong> pour le front, <strong>Node.js ou Python</strong> pour le back, et des bases de données comme PostgreSQL ou MongoDB. Tout est hébergé sur des infrastructures cloud sécurisées (Vercel, AWS, ou OVH selon vos préférences)."
+                },
+                {
+                  question: "Qui héberge mon application une fois livrée ?",
+                  answer: "On s'occupe du <strong>déploiement complet</strong> sur l'infrastructure de votre choix. Vous restez propriétaire de tout : code source, données, nom de domaine. On peut aussi gérer l'hébergement pour vous via un forfait de maintenance mensuel."
+                },
+                {
+                  question: "Proposez-vous un support après le lancement ?",
+                  answer: "Oui, on propose des <strong>forfaits de maintenance</strong> incluant : correction de bugs, mises à jour de sécurité, monitoring, et un volume d'heures pour les évolutions. Vous n'êtes jamais seul après le lancement."
+                }
+              ].map((faq, index) => (
+                <div
+                  key={index}
+                  className="border-b border-gray-100 last:border-b-0"
+                >
+                  <button
+                    onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                    className="w-full py-8 px-4 -mx-4 flex items-center justify-between text-left group rounded-2xl hover:bg-gray-50 transition-all duration-300"
+                  >
+                    <span className="text-lg font-semibold text-slate-900 pr-8 group-hover:text-gray-700 transition-colors">
+                      {faq.question}
+                    </span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${openFaq === index ? 'rotate-180 bg-slate-900' : 'bg-transparent'}`}>
+                      <svg
+                        className={`w-4 h-4 transition-colors duration-300 ${openFaq === index ? 'text-white' : 'text-slate-900'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
                   </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${openFaq === index ? 'max-h-96 pb-6' : 'max-h-0'}`}
+                  >
+                    <p
+                      className="text-gray-500 leading-relaxed pr-12"
+                      dangerouslySetInnerHTML={{ __html: faq.answer }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
