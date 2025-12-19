@@ -89,6 +89,79 @@ function SimpleTextRotator() {
 }
 
 export default function Home() {
+  const [currentProject, setCurrentProject] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [animationDirection, setAnimationDirection] = useState<'next' | 'prev'>('next');
+
+  const projects = [
+    {
+      title: "Peakfast",
+      description: "Peakfast est un service logistique qui facilite la vie des e-commerçants en leur permettant de scaler sereinement sans soucis de logistique. Notre mission ? Réaliser un design à la hauteur de leur promesse et créer une valeur perçue si grande qu'elle creuse un fossé incommensurable entre Peakfast et ses concurrents.",
+      tags: ["Design", "Landing page", "Full animations", "Offre Pulsor+", "Service de logistique"],
+      imageColor: "bg-slate-900",
+      logoColor: "bg-slate-900",
+      imageText: "Projet Peakfast",
+      borderColor: "border-slate-800"
+    },
+    {
+      title: "Kalyps",
+      description: "Une plateforme d'analytics nouvelle génération pour les créateurs de contenu. Kalyps agrège toutes vos données en un seul endroit pour une prise de décision éclairée et rapide.",
+      tags: ["SaaS", "Dashboard", "Analytics", "React", "Node.js"],
+      imageColor: "bg-indigo-600",
+      logoColor: "bg-indigo-600",
+      imageText: "Projet Kalyps",
+      borderColor: "border-indigo-500"
+    },
+    {
+      title: "Mirakle",
+      description: "Mirakle révolutionne les créatives avec un style plus dynamique et authentique, conçu spécialement pour capter l'attention. Pour cette V2, notre objectif était clair : mettre en avant l'énergie et la créativité.",
+      tags: ["Landing page", "Offre Pulsor", "Agence"],
+      imageColor: "bg-blue-600",
+      logoColor: "bg-blue-600",
+      imageText: "Projet Mirakle",
+      borderColor: "border-blue-500"
+    },
+    {
+      title: "Flowbase",
+      description: "Un outil de gestion de workflow nouvelle génération. Flowbase permet aux équipes de collaborer efficacement et d'automatiser leurs processus métier.",
+      tags: ["SaaS", "Workflow", "Automation", "B2B"],
+      imageColor: "bg-emerald-600",
+      logoColor: "bg-emerald-600",
+      imageText: "Projet Flowbase",
+      borderColor: "border-emerald-500"
+    },
+    {
+      title: "Nextera",
+      description: "Une solution e-commerce complète pour les marques ambitieuses. Nextera combine design premium et fonctionnalités avancées pour maximiser les conversions.",
+      tags: ["E-commerce", "Design", "Conversion", "Shopify"],
+      imageColor: "bg-orange-600",
+      logoColor: "bg-orange-600",
+      imageText: "Projet Nextera",
+      borderColor: "border-orange-500"
+    }
+  ];
+
+  const nextProject = () => {
+    if (currentProject >= projects.length - 1) return;
+    if (isAnimating) return;
+    setAnimationDirection('next');
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentProject((prev) => prev + 1);
+      setIsAnimating(false);
+    }, 700);
+  };
+
+  const prevProject = () => {
+    if (currentProject <= 0) return;
+    if (isAnimating) return;
+    setAnimationDirection('prev');
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentProject((prev) => prev - 1);
+      setIsAnimating(false);
+    }, 700);
+  };
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Navbar */}
@@ -212,44 +285,148 @@ export default function Home() {
         {/* Divider */}
         <div className="w-[750px] mx-auto h-px bg-gradient-to-r from-transparent via-[#0A3A69] to-transparent opacity-30 my-20" />
 
-        {/* SECTION 2: PROBLEM */}
+        {/* SECTION 2: PROJECTS CAROUSEL */}
         <section id="problem" className="py-24 bg-white">
-          <div className="container mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <div className="bg-gray-50 rounded-3xl p-8 aspect-square flex items-center justify-center relative overflow-hidden group">
-                {/* Visual placeholder for "Long Development Cycles" */}
-                <div className="w-3/4 h-3/4 bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4 group-hover:scale-105 transition-transform duration-500">
-                  <div className="flex items-center justify-between">
-                    <div className="h-4 w-1/3 bg-gray-100 rounded"></div>
-                    <div className="h-8 w-8 bg-red-50 text-red-500 rounded flex items-center justify-center text-xs">⚠️</div>
+          <div className="container mx-auto px-6 md:px-32 lg:px-48">
+            {/* Header */}
+            <div className="mb-20">
+              <h2 className="text-4xl md:text-5xl font-bold font-heading text-slate-900 leading-tight mb-6 text-left">
+                Un SaaS qui prend des <span className="text-gray-400">"mois"</span> à lancer ?<br />
+                Ce n'est plus possible.
+              </h2>
+              <p className="text-xl text-gray-500 font-medium mb-8 text-left">
+                Vos concurrents sont déjà passés à l'action.
+              </p>
+              <div className="flex justify-start">
+                <button className="bg-slate-900 text-white px-6 py-3 rounded-full font-semibold hover:bg-slate-800 transition-all shadow-lg">
+                  Réservez un appel
+                </button>
+              </div>
+            </div>
+
+            {/* Content Grid */}
+            <div className="relative grid lg:grid-cols-2 gap-16 items-center">
+              {/* Left: Image Block with Animation */}
+              <div className="relative h-[360px] w-full overflow-hidden flex items-center justify-center">
+
+                {/* Container that slides - simplified to 3 blocks */}
+                <div
+                  className={`flex flex-col gap-6 w-full min-w-[450px] ${isAnimating ? 'transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]' : ''}`}
+                  style={{
+                    transform: isAnimating
+                      ? (animationDirection === 'next' ? 'translateY(-304px)' : 'translateY(304px)')
+                      : 'translateY(0px)',
+                    willChange: 'transform'
+                  }}
+                >
+
+                  {/* Previous Block (n-1) - For PREV animation */}
+                  <div className={`h-[280px] w-full rounded-3xl flex items-center justify-center overflow-hidden shadow-lg border
+                    ${currentProject > 0 ? `${projects[currentProject - 1].imageColor} ${projects[currentProject - 1].borderColor || ''}` : 'bg-transparent border-transparent shadow-none'}`}>
+                    <span className="text-gray-100 font-medium relative z-10 text-xl tracking-wide">
+                      {currentProject > 0 ? projects[currentProject - 1].imageText : ''}
+                    </span>
                   </div>
-                  <div className="space-y-2">
-                    <div className="h-2 w-full bg-gray-50 rounded"></div>
-                    <div className="h-2 w-full bg-gray-50 rounded"></div>
-                    <div className="h-2 w-2/3 bg-gray-50 rounded"></div>
+
+                  {/* Main Image Block (current) - COLORFUL */}
+                  <div className={`h-[280px] w-full rounded-3xl flex items-center justify-center overflow-hidden shadow-lg border ${projects[currentProject].imageColor} ${projects[currentProject].borderColor || ''}`}>
+                    <span className="text-gray-100 font-medium relative z-10 text-xl tracking-wide">{projects[currentProject].imageText}</span>
                   </div>
-                  <div className="mt-auto pt-4 border-t border-gray-50">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-red-400"></div>
-                      <span className="text-xs text-gray-400">Délai dépassé de 3 mois...</span>
-                    </div>
+
+                  {/* Next Block (n+1) - For NEXT animation */}
+                  <div className={`h-[280px] w-full rounded-3xl flex items-center justify-center overflow-hidden shadow-lg border
+                    ${currentProject < projects.length - 1 ? `${projects[currentProject + 1].imageColor} ${projects[currentProject + 1].borderColor || ''}` : 'bg-transparent border-transparent shadow-none'}`}>
+                    <span className="text-gray-100 font-medium relative z-10 text-xl tracking-wide">
+                      {currentProject < projects.length - 1 ? projects[currentProject + 1].imageText : ''}
+                    </span>
                   </div>
+
                 </div>
               </div>
-              <div>
-                <div className="inline-block px-4 py-1.5 rounded-full bg-red-50 text-red-600 font-semibold text-sm mb-6">
-                  Le problème
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                  Un SaaS qui prend des "mois" à lancer ? <br />
-                  <span className="text-gray-400">Ce n'est plus possible.</span>
-                </h2>
-                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                  Le marché n'attend pas. Chaque semaine perdue en développement est une opportunité manquée. Nous avons optimisé notre stack pour livrer de la valeur dès la première semaine.
-                </p>
-                <button className="text-black font-semibold border-b-2 border-black pb-1 hover:text-blue-600 hover:border-blue-600 transition-colors">
-                  Découvrir notre méthode
+
+              {/* Swipe Control (Apple-style) */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-2 p-1.5 bg-white/80 backdrop-blur-sm shadow-xl rounded-full border border-white/50 z-20">
+                <button
+                  onClick={prevProject}
+                  disabled={currentProject <= 0}
+                  className={`w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center transition-all
+                    ${currentProject <= 0
+                      ? 'text-gray-200 cursor-not-allowed opacity-50'
+                      : 'text-gray-400 hover:text-black hover:scale-110 active:scale-95'
+                    }
+                  `}
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 15l7-7 7 7" />
+                  </svg>
                 </button>
+                <button
+                  onClick={nextProject}
+                  disabled={currentProject >= projects.length - 1}
+                  className={`w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center transition-all
+                    ${currentProject >= projects.length - 1
+                      ? 'text-gray-200 cursor-not-allowed opacity-50'
+                      : 'text-gray-400 hover:text-black hover:scale-110 active:scale-95'
+                    }
+                  `}
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Right: Text Block */}
+              <div>
+                {/* Title with logo */}
+                <div className={`flex items-center gap-4 mb-6 transition-all duration-400 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}
+                  style={{ transitionDelay: isAnimating ? '0ms' : '200ms', transitionDuration: '400ms' }}>
+                  <div className={`w-12 h-12 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center`}>
+                    <div className={`w-6 h-6 ${projects[currentProject].logoColor} rotate-45 rounded-sm`}></div>
+                  </div>
+                  <h3 className="text-4xl font-bold text-slate-900 font-heading">{projects[currentProject].title}</h3>
+                </div>
+
+                {/* Description */}
+                <p className={`text-gray-600 leading-relaxed mb-6 h-32 overflow-hidden transition-all ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}
+                  style={{ transitionDelay: isAnimating ? '80ms' : '120ms', transitionDuration: '400ms' }}>
+                  {projects[currentProject].description}
+                </p>
+
+                {/* Link */}
+                <a href="#" className={`inline-flex items-center text-slate-900 font-semibold mb-8 hover:underline group transition-all ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}
+                  style={{ transitionDelay: isAnimating ? '160ms' : '60ms', transitionDuration: '400ms' }}>
+                  Voir la version live
+                  <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                </a>
+
+                {/* Tags */}
+                <div className={`flex flex-wrap gap-2 transition-all ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}
+                  style={{ transitionDelay: isAnimating ? '240ms' : '0ms', transitionDuration: '400ms' }}>
+                  {projects[currentProject].tags.map((tag) => (
+                    <span key={tag} className="px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 bg-gray-50/50 hover:bg-gray-100 transition-colors cursor-default">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
