@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Peak Agency - Digital Excellence",
   description: "Transforming ideas into digital reality.",
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function RootLayout({
