@@ -97,6 +97,11 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -335,14 +340,19 @@ export default function Home() {
 
 
               <h1 className="text-5xl md:text-7xl font-semibold mb-8 max-w-5xl mx-auto leading-[1.15] font-heading text-slate-900" style={{ letterSpacing: '-2px' }}>
-                Lancez votre solution <span className="text-slate-900">SaaS</span> & <span className="text-slate-900">MVP</span> en jours, pas en mois
+                <span className={`block transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+                  Lancez votre solution <span className="text-slate-900">SaaS</span>
+                </span>
+                <span className={`block transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] delay-150 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+                  & <span className="text-slate-900">MVP</span> en jours, pas en mois
+                </span>
               </h1>
 
-              <p className="text-base text-gray-500 mb-10 max-w-lg mx-auto leading-relaxed">
+              <p className={`text-base text-gray-500 mb-10 max-w-lg mx-auto leading-relaxed transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                 Design, développement et hébergement sécurisé en Europe, prêt à l’usage et à tester vos premiers utilisateurs
               </p>
 
-              <div className="flex flex-col gap-8 justify-center items-center mt-14">
+              <div className={`flex flex-col gap-8 justify-center items-center mt-14 transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                 <a href="https://calendly.com/peak-dev-agency/30min" target="_blank" className="group px-5 py-2 rounded-full bg-slate-900 text-white font-semibold text-[15px] hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/20">
                   <div className="flex items-start justify-center overflow-hidden h-[34px] gap-1">
                     {["Lancez", "mon", "projet"].map((word, i) => (
