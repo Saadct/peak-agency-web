@@ -558,9 +558,9 @@ export default function Home() {
                 </p>
 
                 {/* Link */}
-                <a href="#" className={`inline-flex items-center text-slate-900 font-semibold mb-8 hover:underline group transition-all ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}
+                <a href="https://calendly.com/peak-dev-agency/30min" target="_blank" className={`inline-flex items-center text-slate-900 font-semibold mb-8 hover:underline group transition-all ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}
                   style={{ transitionDelay: isAnimating ? '160ms' : '60ms', transitionDuration: '400ms' }}>
-                  Voir la version live
+                  Commencez maintenant
                   <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                 </a>
 
